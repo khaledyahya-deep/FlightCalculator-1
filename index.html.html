@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة التعديل والإلغاء</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            direction: rtl;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 950px;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode .container {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+        }
+
+        body.dark-mode .container {
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        body.light-mode h1 {
+            color: #007bff;
+        }
+
+        body.dark-mode h1 {
+            color: #66b3ff;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        body.light-mode input,
+        body.light-mode select {
+            background-color: #fff;
+            color: #333;
+        }
+
+        body.dark-mode input,
+        body.dark-mode select {
+            background-color: #333;
+            color: #e0e0e0;
+            border-color: #66b3ff;
+        }
+
+        input:focus, select:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        body.dark-mode button {
+            background-color: #66b3ff;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        body.dark-mode button:hover {
+            background-color: #3385ff;
+        }
+
+        button.loading::after {
+            content: "\f110";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .output {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            font-size: 16px;
+            line-height: 1.6;
+            white-space: pre-line;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode .output {
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        body.dark-mode .output {
+            background-color: #333;
+            color: #e0e0e0;
+            border-color: #66b3ff;
+        }
+
+        .highlight-total {
+            font-weight: bold;
+            color: #ff4500;
+            font-size: 18px;
+        }
+
+        .select-container {
+            margin-bottom: 20px;
+        }
+
+        .icon {
+            margin-left: 10px;
+            font-size: 20px;
+        }
+
+        body.light-mode .icon {
+            color: #007bff;
+        }
+
+        body.dark-mode .icon {
+            color: #66b3ff;
+        }
+
+        .copy-success {
+            color: #28a745;
+            font-size: 16px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        body.light-mode .section-title {
+            color: #007bff;
+        }
+
+        body.dark-mode .section-title {
+            color: #66b3ff;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .buttons-container button {
+            flex: 1;
+        }
+
+        .buttons-container button.reset {
+            background-color: #dc3545;
+        }
+
+        .buttons-container button.reset:hover {
+            background-color: #c82333;
+        }
+
+        .buttons-container button.copy {
+            background-color: #28a745;
+        }
+
+        .buttons-container button.copy:hover {
+            background-color: #218838;
+        }
+
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark-mode .theme-switch {
+            background-color: #66b3ff;
+        }
+
+        .theme-switch:hover {
+            background-color: #0056b3;
+        }
+
+        body.dark-mode .theme-switch:hover {
+            background-color: #3385ff;
+        }
+
+        .theme-switch i {
+            font-size: 24px;
+        }
+
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-radius: 8px;
+            margin: 0 8px;
+            background-color: #e9ecef;
+            color: #333;
+            transition: background-color 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            border: 1px solid #007bff;
+        }
+
+        body.dark-mode .tab {
+            background-color: #444;
+            color: #e0e0e0;
+            border-color: #66b3ff;
+        }
+
+        .tab.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        body.dark-mode .tab.active {
+            background-color: #66b3ff;
+        }
+
+        .tab:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        body.dark-mode .tab:hover {
+            background-color: #3385ff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .sub-tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .sub-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 8px;
+            margin: 0 5px;
+            background-color: #e9ecef;
+            color: #333;
+            transition: background-color 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            border: 1px solid #007bff;
+        }
+
+        body.dark-mode .sub-tab {
+            background-color: #444;
+            color: #e0e0e0;
+            border-color: #66b3ff;
+        }
+
+        .sub-tab.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        body.dark-mode .sub-tab.active {
+            background-color: #66b3ff;
+        }
+
+        .sub-tab:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        body.dark-mode .sub-tab:hover {
+            background-color: #3385ff;
+        }
+
+        .sub-tab-content {
+            display: none;
+        }
+
+        .sub-tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .buttons-container {
+                flex-direction: column;
+            }
+            h1 {
+                font-size: 28px;
+            }
+            .container {
+                padding: 20px;
+                width: 85%;
+            }
+            .tab, .sub-tab {
+                padding: 10px 18px;
+                font-size: 16px;
+                margin: 0 4px;
+            }
+            .section-title {
+                font-size: 20px;
+            }
+            label {
+                font-size: 14px;
+            }
+            button {
+                font-size: 16px;
+                padding: 10px;
+            }
+            .theme-switch {
+                width: 40px;
+                height: 40px;
+            }
+            .theme-switch i {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body class="light-mode">
+
+<div class="theme-switch" onclick="toggleTheme()">
+    <i class="fas fa-moon"></i>
+</div>
+
+<div class="container">
+    <h1><i class="fas fa-rocket"></i>حاسبة التعديل والإلغاء</h1>
+
+    <div class="tab-container">
+        <div class="tab active" onclick="showTab('modification')">التعديل</div>
+        <div class="tab" onclick="showTab('cancellation')">الإلغاء</div>
+    </div>
+
+    <div id="modificationTab" class="tab-content active">
+        <div class="select-container">
+            <label for="modificationAirline"><i class="fas fa-plane icon"></i>اختر خط الطيران:</label>
+            <select id="modificationAirline" onchange="toggleModificationFields()">
+                <option value="airline1">بقية الخطوط الجوية</option>
+                <option value="airline2">طيران الجزيرة</option>
+            </select>
+        </div>
+
+        <div id="otherAirlinesFields">
+            <div class="section-title"><i class="fas fa-edit"></i>تفاصيل التعديل</div>
+            <div class="input-group">
+                <div>
+                    <label for="modificationType"><i class="fas fa-money-check-alt icon"></i>نوع التعديل:</label>
+                    <select id="modificationType" onchange="toggleModificationTypeFields()">
+                        <option value="" selected>اختر نوع التعديل</option>
+                        <option value="free">التعديل بدون رسوم</option>
+                        <option value="withFee">التعديل برسوم</option>
+                    </select>
+                </div>
+            </div>
+            <div id="modificationFreeFields" class="input-group">
+                <div>
+                    <label for="freeModificationText"><i class="fas fa-check icon"></i>التعديل بدون رسوم:</label>
+                    <input type="text" id="freeModificationText" value="نعم" disabled>
+                </div>
+                <div>
+                    <label for="modificationCount"><i class="fas fa-redo icon"></i>عدد المرات:</label>
+                    <input type="number" id="modificationCount" min="0" placeholder="مثال: 2">
+                </div>
+                <div>
+                    <label for="modificationFeeAfterCount"><i class="fas fa-money-bill-wave icon"></i>رسوم التعديل بعد العدد:</label>
+                    <input type="number" id="modificationFeeAfterCount" min="0" placeholder="مثال: 20">
+                </div>
+            </div>
+            <div id="modificationWithFeeFields" class="input-group">
+                <div>
+                    <label for="modificationFee"><i class="fas fa-money-bill-wave icon"></i>رسوم التعديل:</label>
+                    <input type="number" id="modificationFee" min="0" placeholder="مثال: 20">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="adultPriceDifference"><i class="fas fa-user icon"></i>فرق السعر للبالغ:</label>
+                    <input type="number" id="adultPriceDifference" min="0" placeholder="مثال: 10">
+                </div>
+                <div>
+                    <label for="adultCount"><i class="fas fa-users icon"></i>عدد البالغين:</label>
+                    <input type="number" id="adultCount" min="0" placeholder="مثال: 2">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="childPriceDifference"><i class="fas fa-child icon"></i>فرق السعر للطفل:</label>
+                    <input type="number" id="childPriceDifference" min="0" placeholder="مثال: 5">
+                </div>
+                <div>
+                    <label for="childCount"><i class="fas fa-baby icon"></i>عدد الأطفال:</label>
+                    <input type="number" id="childCount" min="0" placeholder="مثال: 1">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="infantPriceDifference"><i class="fas fa-baby-carriage icon"></i>فرق السعر للرضيع:</label>
+                    <input type="number" id="infantPriceDifference" min="0" placeholder="مثال: 0">
+                </div>
+                <div>
+                    <label for="infantCount"><i class="fas fa-baby icon"></i>عدد الرضع:</label>
+                    <input type="number" id="infantCount" min="0" placeholder="مثال: 1">
+                </div>
+                <div>
+                    <label for="infantModificationFee"><i class="fas fa-plane icon"></i>الرضيع بدون رسوم:</label>
+                    <select id="infantModificationFee">
+                        <option value="no" selected>No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="safaFee"><i class="fas fa-coins icon"></i>رسوم صفا للشخص الواحد:</label>
+                    <input type="number" id="safaFee" min="0" placeholder="مثال: 5">
+                </div>
+                <div>
+                    <label for="aviationTax"><i class="fas fa-plane-departure icon"></i>ضرائب الطيران للشخص الواحد:</label>
+                    <input type="number" id="aviationTax" min="0" placeholder="مثال: 3">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="noShowStatus"><i class="fas fa-exclamation-triangle icon"></i>حالة عدم الظهور:</label>
+                    <select id="noShowStatus" onchange="toggleNoShowFields()">
+                        <option value="" selected>اختر حالة عدم الظهور</option>
+                        <option value="normal">التعديل في الوقت العادي</option>
+                        <option value="afterDeparture">بعد إقلاع الرحلة</option>
+                    </select>
+                </div>
+            </div>
+            <div id="noShowNormalFields" class="input-group">
+                <div>
+                    <label for="hours"><i class="fas fa-clock icon"></i>عدد الساعات:</label>
+                    <input type="text" id="hours" placeholder="مثال: 8 ساعات">
+                </div>
+                <div>
+                    <label for="noShowFee"><i class="fas fa-exclamation-triangle icon"></i>رسوم عدم الظهور:</label>
+                    <input type="number" id="noShowFee" min="0" placeholder="مثال: 10">
+                </div>
+            </div>
+            <div id="noShowAfterDepartureFields" class="input-group">
+                <div>
+                    <label for="noShowFeeAfterDeparture"><i class="fas fa-exclamation-triangle icon"></i>رسوم عدم الظهور:</label>
+                    <input type="number" id="noShowFeeAfterDeparture" min="0" placeholder="مثال: 20">
+                </div>
+            </div>
+        </div>
+
+        <div id="jazeeraFields" style="display: none;">
+            <div class="section-title"><i class="fas fa-edit"></i>تفاصيل التعديل</div>
+            <div class="input-group">
+                <div>
+                    <label for="bookingReference"><i class="fas fa-tag icon"></i>مرجع الحجز:</label>
+                    <input type="text" id="bookingReference" placeholder="مثال: ABC123">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="airlineFee"><i class="fas fa-money-bill-wave icon"></i>رسوم شركة الطيران + فرق السعر:</label>
+                    <input type="number" id="airlineFee" min="0" placeholder="مثال: 25">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="safaFeeJazeera"><i class="fas fa-coins icon"></i>رسوم شركة صفا:</label>
+                    <input type="number" id="safaFeeJazeera" min="0" placeholder="مثال: 5">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="modificationCondition"><i class="fas fa-exclamation-circle icon"></i>شروط التعديل:</label>
+                    <select id="modificationCondition">
+                        <option value="8hours">غير قابل للتعديل خلال 8 ساعات</option>
+                        <option value="24hours">غير قابل للتعديل خلال 24 ساعة</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="buttons-container">
+            <button id="generateModBtn" onclick="generateModificationOutput(this)"><i class="fas fa-file-alt"></i>إنشاء النص</button>
+            <button class="reset" onclick="resetModificationFieldsWithConfirm()"><i class="fas fa-redo"></i>إعادة تعيين</button>
+            <button class="copy" onclick="copyOutput('modificationOutput', 'modificationCopySuccess')"><i class="fas fa-copy"></i>نسخ النص</button>
+            <button class="toggle-lang" onclick="toggleLanguage('modificationOutput', this)"><i class="fas fa-language"></i>عربي/إنجليزي</button>
+        </div>
+        
+        <div class="output" id="modificationOutput"></div>
+        <div class="copy-success" id="modificationCopySuccess">تم نسخ النص بنجاح!</div>
+    </div>
+
+    <div id="cancellationTab" class="tab-content">
+        <div class="section-title"><i class="fas fa-ban"></i>تفاصيل الإلغاء</div>
+        <div class="sub-tab-container">
+            <div class="sub-tab active" onclick="showSubTab('normalCancel')">الإلغاء العادي</div>
+            <div class="sub-tab" onclick="showSubTab('voidCancel')">الإلغاء Void</div>
+        </div>
+        <div id="normalCancelTab" class="sub-tab-content">
+            <div class="input-group">
+                <div>
+                    <label for="paidAmountCancel"><i class="fas fa-credit-card icon"></i>القيمة المدفوعة للحجز:</label>
+                    <input type="number" id="paidAmountCancel" min="0" placeholder="مثال: 100">
+                </div>
+                <div>
+                    <label for="outboundFlightValue"><i class="fas fa-plane-departure icon"></i>قيمة رحلة الذهاب:</label>
+                    <input type="number" id="outboundFlightValue" min="0" placeholder="مثال: 50">
+                </div>
+                <div>
+                    <label for="cancelFee"><i class="fas fa-money-bill-wave icon"></i>رسوم الإلغاء العامة:</label>
+                    <input type="number" id="cancelFee" min="0" placeholder="مثال: 20">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="adultCancelCount"><i class="fas fa-users icon"></i>عدد البالغين:</label>
+                    <input type="number" id="adultCancelCount" min="0" placeholder="مثال: 2">
+                </div>
+                <div>
+                    <label for="adultCancelPercentage"><i class="fas fa-percentage icon"></i>نسبة رسوم الإلغاء للبالغ:</label>
+                    <input type="number" id="adultCancelPercentage" min="0" placeholder="مثال: 25">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="childCancelCount"><i class="fas fa-child icon"></i>عدد الأطفال:</label>
+                    <input type="number" id="childCancelCount" min="0" placeholder="مثال: 1">
+                </div>
+                <div>
+                    <label for="childCancelPercentage"><i class="fas fa-percentage icon"></i>نسبة رسوم الإلغاء للطفل:</label>
+                    <input type="number" id="childCancelPercentage" min="0" placeholder="مثال: 20 أو اتركه فارغًا">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="infantCancelCount"><i class="fas fa-baby-carriage icon"></i>عدد الرضع:</label>
+                    <input type="number" id="infantCancelCount" min="0" placeholder="مثال: 1">
+                </div>
+                <div>
+                    <label for="infantCancelPercentage"><i class="fas fa-percentage icon"></i>نسبة رسوم الإلغاء للرضيع:</label>
+                    <input type="number" id="infantCancelPercentage" min="0" placeholder="مثال: 15 أو اتركه فارغًا">
+                </div>
+                <div>
+                    <label for="infantWithFees"><i class="fas fa-coins icon"></i>هل الرضيع برسوم؟</label>
+                    <select id="infantWithFees">
+                        <option value="yes">نعم</option>
+                        <option value="no">لا</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="safaFeeCancel"><i class="fas fa-coins icon"></i>رسوم صفا لكل مسافر:</label>
+                    <input type="number" id="safaFeeCancel" min="0" placeholder="مثال: 10">
+                </div>
+                <div>
+                    <label for="nonRefundableTaxCancel"><i class="fas fa-ban icon"></i>ضرائب غير مستردة لكل مسافر:</label>
+                    <input type="number" id="nonRefundableTaxCancel" min="0" placeholder="مثال: 5">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="cancelNoShowStatus"><i class="fas fa-exclamation-triangle icon"></i>حالة عدم الظهور:</label>
+                    <select id="cancelNoShowStatus" onchange="toggleCancelNoShowFields()">
+                        <option value="withinHours">عدم الظهور بعدد ساعات محددة</option>
+                        <option value="afterDeparture">عدم الظهور بعد إقلاع الرحلة</option>
+                    </select>
+                </div>
+            </div>
+            <div id="cancelWithinHoursFields" class="input-group">
+                <div>
+                    <label for="currentCancelHours"><i class="fas fa-clock icon"></i>عدد الساعات:</label>
+                    <input type="text" id="currentCancelHours" placeholder="مثال: 8 ساعات">
+                </div>
+                <div>
+                    <label for="currentCancelFee"><i class="fas fa-money-bill-wave icon"></i>رسوم عدم الظهور:</label>
+                    <input type="number" id="currentCancelFee" min="0" placeholder="مثال: 10">
+                </div>
+            </div>
+            <div id="cancelAfterDepartureFields" class="input-group" style="display: none;">
+                <div>
+                    <label for="noShowCancelFee"><i class="fas fa-money-bill-wave icon"></i>رسوم عدم الظهور:</label>
+                    <input type="number" id="noShowCancelFee" min="0" placeholder="مثال: 20">
+                </div>
+            </div>
+        </div>
+        <div id="voidCancelTab" class="sub-tab-content">
+            <div class="input-group">
+                <div>
+                    <label for="paidAmountCancelVoid"><i class="fas fa-credit-card icon"></i>القيمة المدفوعة للحجز:</label>
+                    <input type="number" id="paidAmountCancelVoid" min="0" placeholder="مثال: 100">
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="voidPassengerCount"><i class="fas fa-users icon"></i>عدد المسافرين:</label>
+                    <input type="number" id="voidPassengerCount" min="0" placeholder="مثال: 6">
+                </div>
+            </div>
+        </div>
+
+        <div class="buttons-container">
+            <button id="generateCancelBtn" onclick="generateCancellationOutput(this)"><i class="fas fa-file-alt"></i>إنشاء النص</button>
+            <button class="reset" onclick="resetCancellationFieldsWithConfirm()"><i class="fas fa-redo"></i>إعادة تعيين</button>
+            <button class="copy" onclick="copyOutput('cancellationOutput', 'cancellationCopySuccess')"><i class="fas fa-copy"></i>نسخ النص</button>
+            <button class="toggle-lang" onclick="toggleLanguage('cancellationOutput', this)"><i class="fas fa-language"></i>عربي/إنجليزي</button>
+        </div>
+        
+        <div class="output" id="cancellationOutput"></div>
+        <div class="copy-success" id="cancellationCopySuccess">تم نسخ النص بنجاح!</div>
+    </div>
+</div>
+
+<script>
+    let currentLanguage = { 'modificationOutput': 'ar', 'cancellationOutput': 'ar' };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'light-mode';
+        document.body.className = savedTheme;
+        updateThemeIcon();
+        showSubTab('normalCancel');
+        toggleCancelNoShowFields();
+    });
+
+    function toggleTheme() {
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        document.body.classList.toggle('light-mode', isDarkMode);
+        document.body.classList.toggle('dark-mode', !isDarkMode);
+        localStorage.setItem('theme', isDarkMode ? 'light-mode' : 'dark-mode');
+        updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+        const themeSwitch = document.querySelector('.theme-switch i');
+        themeSwitch.className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    function toggleModificationFields() {
+        const airline = document.getElementById('modificationAirline').value;
+        document.getElementById('otherAirlinesFields').style.display = airline === 'airline1' ? 'block' : 'none';
+        document.getElementById('jazeeraFields').style.display = airline === 'airline2' ? 'block' : 'none';
+    }
+
+    function toggleModificationTypeFields() {
+        const modificationType = document.getElementById('modificationType').value;
+        document.getElementById('modificationFreeFields').style.display = modificationType === 'free' ? 'flex' : 'none';
+        document.getElementById('modificationWithFeeFields').style.display = modificationType === 'withFee' ? 'flex' : 'none';
+    }
+
+    function toggleNoShowFields() {
+        const noShowStatus = document.getElementById('noShowStatus').value;
+        document.getElementById('noShowNormalFields').style.display = noShowStatus === 'normal' ? 'flex' : 'none';
+        document.getElementById('noShowAfterDepartureFields').style.display = noShowStatus === 'afterDeparture' ? 'flex' : 'none';
+    }
+
+    function toggleCancelNoShowFields() {
+        const noShowStatus = document.getElementById('cancelNoShowStatus').value;
+        document.getElementById('cancelWithinHoursFields').style.display = noShowStatus === 'withinHours' ? 'flex' : 'none';
+        document.getElementById('cancelAfterDepartureFields').style.display = noShowStatus === 'afterDeparture' ? 'flex' : 'none';
+    }
+
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.getElementById(tabId + 'Tab').classList.add('active');
+        document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+    }
+
+    function showSubTab(subTabId) {
+        document.querySelectorAll('.sub-tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.sub-tab').forEach(tab => tab.classList.remove('active'));
+        document.getElementById(subTabId + 'Tab').classList.add('active');
+        document.querySelector(`[onclick="showSubTab('${subTabId}')"]`).classList.add('active');
+    }
+
+    function showLoading(button, callback) {
+        button.classList.add('loading');
+        setTimeout(() => {
+            callback();
+            button.classList.remove('loading');
+        }, 200);
+    }
+
+    function generateModificationOutput(button) {
+        showLoading(button, () => {
+            const airline = document.getElementById('modificationAirline').value;
+            let outputText = '';
+
+            if (airline === 'airline1') {
+                const modificationType = document.getElementById('modificationType').value;
+                let modificationFee = 0;
+
+                if (modificationType === 'withFee') {
+                    modificationFee = parseFloat(document.getElementById('modificationFee').value) || 0;
+                    outputText += `رسوم التعديل: ${modificationFee} دينار\n`;
+                } else if (modificationType === 'free') {
+                    const modificationCount = parseInt(document.getElementById('modificationCount').value) || 0;
+                    const modificationFeeAfterCount = parseFloat(document.getElementById('modificationFeeAfterCount').value) || 0;
+                    outputText += `نوع التعديل: التعديل بدون رسوم لـ ${modificationCount === 1 ? 'مرة واحدة فقط' : modificationCount + ' مرات'}\n`;
+                    outputText += `رسوم التعديل بعد ${modificationCount === 1 ? 'المرة الأولى' : modificationCount + ' مرات'}: ${modificationFeeAfterCount} دينار\n`;
+                } else {
+                    outputText += `رسوم التعديل: لم يتم اختيار نوع التعديل\n`;
+                }
+
+                const adultPriceDifference = parseFloat(document.getElementById('adultPriceDifference').value) || 0;
+                const childPriceDifference = parseFloat(document.getElementById('childPriceDifference').value) || 0;
+                const infantPriceDifference = parseFloat(document.getElementById('infantPriceDifference').value) || 0;
+                const safaFee = parseFloat(document.getElementById('safaFee').value) || 0;
+                const aviationTax = parseFloat(document.getElementById('aviationTax').value) || 0;
+                const adultCount = parseInt(document.getElementById('adultCount').value) || 0;
+                const childCount = parseInt(document.getElementById('childCount').value) || 0;
+                const infantCount = parseInt(document.getElementById('infantCount').value) || 0;
+                const noShowStatus = document.getElementById('noShowStatus').value;
+                const hours = document.getElementById('hours').value;
+                const noShowFee = parseFloat(document.getElementById('noShowFee').value) || 0;
+                const noShowFeeAfterDeparture = parseFloat(document.getElementById('noShowFeeAfterDeparture').value) || 0;
+                const infantModificationFee = document.getElementById('infantModificationFee').value === 'yes';
+
+                const taxDifferencePerPerson = safaFee + aviationTax;
+                const totalAdult = (modificationFee + adultPriceDifference + taxDifferencePerPerson) * adultCount;
+                const totalChild = (modificationFee + childPriceDifference + taxDifferencePerPerson) * childCount;
+                const totalInfant = infantModificationFee 
+                    ? (infantPriceDifference + aviationTax) * infantCount 
+                    : (modificationFee + infantPriceDifference + taxDifferencePerPerson) * infantCount;
+                const grandTotal = totalAdult + totalChild + totalInfant;
+
+                outputText += `فرق الضرائب: ${taxDifferencePerPerson.toFixed(2)} دينار\n`;
+                if (adultCount > 0) outputText += `
+فرق السعر للبالغ: ${adultPriceDifference} دينار
+إجمالي الرسوم للبالغين: ${totalAdult.toFixed(2)} دينار (لـ ${adultCount} أشخاص)`;
+                if (childCount > 0) outputText += `
+فرق السعر للطفل: ${childPriceDifference} دينار
+إجمالي الرسوم للأطفال: ${totalChild.toFixed(2)} دينار (لـ ${childCount} أشخاص)`;
+                if (infantCount > 0) outputText += `
+فرق السعر للرضيع: ${infantPriceDifference} دينار
+إجمالي الرسوم للرضع: ${totalInfant.toFixed(2)} دينار (لـ ${infantCount} أشخاص)`;
+
+                outputText += `
+---
+<span class="highlight-total">إجمالي رسوم التعديل: ${grandTotal.toFixed(2)} دينار</span>
+---
+`;
+
+                if (noShowStatus === 'normal' && noShowFee) outputText += `
+في حالة عدم الظهور خلال ${hours || '0'} ساعات من وقت الإقلاع:
+رسوم التعديل: ${noShowFee} دينار + فرق السعر والضرائب (إن وجد)`;
+                else if (noShowStatus === 'afterDeparture' && noShowFeeAfterDeparture) outputText += `
+في حالة عدم استخدام الرحلة بعد الإقلاع:
+رسوم التعديل: ${noShowFeeAfterDeparture} دينار + فرق السعر والضرائب (إن وجد)`;
+
+                outputText += `
+ملاحظة: السعر والإمكانية غير ثابتين`;
+            } else {
+                const bookingReference = document.getElementById('bookingReference').value;
+                const airlineFee = parseFloat(document.getElementById('airlineFee').value) || 0;
+                const safaFeeJazeera = parseFloat(document.getElementById('safaFeeJazeera').value) || 0;
+                const modificationCondition = document.getElementById('modificationCondition').value;
+
+                const totalModificationFee = airlineFee + safaFeeJazeera;
+
+                outputText = `
+مرجع الحجز: ${bookingReference}
+رسوم التعديل على الحجز الخاص بنا: ${totalModificationFee.toFixed(2)} دينار
+شروط التعديل: ${modificationCondition === '8hours' ? 'الحجز غير قابل للتعديل خلال 8 ساعات من وقت الإقلاع' : 'الحجز غير قابل للتعديل خلال 24 ساعة من وقت الإقلاع'}
+ملاحظة: السعر والإمكانية غير ثابتين`;
+            }
+
+            document.getElementById('modificationOutput').innerHTML = outputText;
+            currentLanguage['modificationOutput'] = 'ar';
+        });
+    }
+
+    function generateModificationOutputEnglish() {
+        showLoading(document.getElementById('generateModBtn'), () => {
+            const airline = document.getElementById('modificationAirline').value;
+            let outputText = '';
+
+            if (airline === 'airline1') {
+                const modificationType = document.getElementById('modificationType').value;
+                let modificationFee = 0;
+
+                if (modificationType === 'withFee') {
+                    modificationFee = parseFloat(document.getElementById('modificationFee').value) || 0;
+                    outputText += `Modification fee: ${modificationFee} KWD\n`;
+                } else if (modificationType === 'free') {
+                    const modificationCount = parseInt(document.getElementById('modificationCount').value) || 0;
+                    const modificationFeeAfterCount = parseFloat(document.getElementById('modificationFeeAfterCount').value) || 0;
+                    outputText += `Modification type: Free modification for ${modificationCount === 1 ? '1 time only' : modificationCount + ' times'}\n`;
+                    outputText += `Modification fee after ${modificationCount === 1 ? 'the first time' : modificationCount + ' times'}: ${modificationFeeAfterCount} KWD\n`;
+                } else {
+                    outputText += `Modification fee: No modification type selected\n`;
+                }
+
+                const adultPriceDifference = parseFloat(document.getElementById('adultPriceDifference').value) || 0;
+                const childPriceDifference = parseFloat(document.getElementById('childPriceDifference').value) || 0;
+                const infantPriceDifference = parseFloat(document.getElementById('infantPriceDifference').value) || 0;
+                const safaFee = parseFloat(document.getElementById('safaFee').value) || 0;
+                const aviationTax = parseFloat(document.getElementById('aviationTax').value) || 0;
+                const adultCount = parseInt(document.getElementById('adultCount').value) || 0;
+                const childCount = parseInt(document.getElementById('childCount').value) || 0;
+                const infantCount = parseInt(document.getElementById('infantCount').value) || 0;
+                const noShowStatus = document.getElementById('noShowStatus').value;
+                const hours = document.getElementById('hours').value;
+                const noShowFee = parseFloat(document.getElementById('noShowFee').value) || 0;
+                const noShowFeeAfterDeparture = parseFloat(document.getElementById('noShowFeeAfterDeparture').value) || 0;
+                const infantModificationFee = document.getElementById('infantModificationFee').value === 'yes';
+
+                const taxDifferencePerPerson = safaFee + aviationTax;
+                const totalAdult = (modificationFee + adultPriceDifference + taxDifferencePerPerson) * adultCount;
+                const totalChild = (modificationFee + childPriceDifference + taxDifferencePerPerson) * childCount;
+                const totalInfant = infantModificationFee 
+                    ? (infantPriceDifference + aviationTax) * infantCount 
+                    : (modificationFee + infantPriceDifference + taxDifferencePerPerson) * infantCount;
+                const grandTotal = totalAdult + totalChild + totalInfant;
+
+                outputText += `Tax difference: ${taxDifferencePerPerson.toFixed(2)} KWD\n`;
+                if (adultCount > 0) outputText += `
+Price difference for adult: ${adultPriceDifference} KWD
+Total fees for adults: ${totalAdult.toFixed(2)} KWD (for ${adultCount} persons)`;
+                if (childCount > 0) outputText += `
+Price difference for child: ${childPriceDifference} KWD
+Total fees for children: ${totalChild.toFixed(2)} KWD (for ${childCount} persons)`;
+                if (infantCount > 0) outputText += `
+Price difference for infant: ${infantPriceDifference} KWD
+Total fees for infants: ${totalInfant.toFixed(2)} KWD (for ${infantCount} persons)`;
+
+                outputText += `
+---
+<span class="highlight-total">Total modification fees: ${grandTotal.toFixed(2)} KWD</span>
+---
+`;
+
+                if (noShowStatus === 'normal' && noShowFee) outputText += `
+In case of no-show within ${hours || '0'} hours of departure time:
+Modification fee: ${noShowFee} KWD + price and tax difference (if applicable)`;
+                else if (noShowStatus === 'afterDeparture' && noShowFeeAfterDeparture) outputText += `
+In case of no-show after departure:
+Modification fee: ${noShowFeeAfterDeparture} KWD + price and tax difference (if applicable)`;
+
+                outputText += `
+Note: Price and availability are not fixed`;
+            } else {
+                const bookingReference = document.getElementById('bookingReference').value;
+                const airlineFee = parseFloat(document.getElementById('airlineFee').value) || 0;
+                const safaFeeJazeera = parseFloat(document.getElementById('safaFeeJazeera').value) || 0;
+                const modificationCondition = document.getElementById('modificationCondition').value;
+
+                const totalModificationFee = airlineFee + safaFeeJazeera;
+
+                outputText = `
+Booking reference: ${bookingReference}
+Modification fee for our booking: ${totalModificationFee.toFixed(2)} KWD
+Modification condition: ${modificationCondition === '8hours' ? 'Not modifiable within 8 hours of departure' : 'Not modifiable within 24 hours of departure'}
+Note:
+- Price and availability are subject to change
+- This is the lowest available option`;
+            }
+
+            document.getElementById('modificationOutput').innerHTML = outputText;
+            currentLanguage['modificationOutput'] = 'en';
+        });
+    }
+
+    function generateCancellationOutput(button) {
+        showLoading(button, () => {
+            const activeSubTab = document.querySelector('.sub-tab.active').getAttribute('onclick').match(/'([^']+)'/)[1];
+            let outputText;
+
+            if (activeSubTab === 'voidCancel') {
+                const paidAmountCancelVoid = parseFloat(document.getElementById('paidAmountCancelVoid').value) || 0;
+                const voidPassengerCount = parseInt(document.getElementById('voidPassengerCount').value) || 0;
+                const voidSafaFee = 10; // رسوم صفا لكل مسافر
+                const totalVoidDeduction = voidSafaFee * voidPassengerCount;
+                const refundAmount = paidAmountCancelVoid - totalVoidDeduction;
+
+                outputText = `
+تفاصيل الإلغاء:
+القيمة المدفوعة: ${paidAmountCancelVoid.toFixed(2)} دينار
+`;
+
+                if (voidPassengerCount > 0) {
+                    outputText += `
+رسوم الإلغاء في الوقت الحالي: ${totalVoidDeduction.toFixed(2)} دينار (لـ ${voidPassengerCount} أشخاص)
+---
+المبلغ المسترد: ${refundAmount.toFixed(2)} دينار
+---
+ملاحظة: رسوم الإلغاء متغيرة في الإلغاء بعد 24 ساعة`;
+                } else {
+                    outputText += `
+---
+المبلغ المسترد: ${paidAmountCancelVoid.toFixed(2)} دينار
+---
+ملاحظة: رسوم الإلغاء متغيرة في الإلغاء بعد 24 ساعة`;
+                }
+            } else if (activeSubTab === 'normalCancel') {
+                const paidAmountCancel = parseFloat(document.getElementById('paidAmountCancel').value) || 0;
+                const outboundFlightValue = parseFloat(document.getElementById('outboundFlightValue').value) || 0;
+                const cancelFee = parseFloat(document.getElementById('cancelFee').value) || 0;
+                const adultCancelCount = parseInt(document.getElementById('adultCancelCount').value) || 0;
+                const childCancelCount = parseInt(document.getElementById('childCancelCount').value) || 0;
+                const infantCancelCount = parseInt(document.getElementById('infantCancelCount').value) || 0;
+                const adultCancelPercentage = parseFloat(document.getElementById('adultCancelPercentage').value) || 0;
+                const childCancelPercentage = parseFloat(document.getElementById('childCancelPercentage').value);
+                const infantCancelPercentage = parseFloat(document.getElementById('infantCancelPercentage').value);
+                const safaFeeCancel = parseFloat(document.getElementById('safaFeeCancel').value) || 0;
+                const nonRefundableTaxCancel = parseFloat(document.getElementById('nonRefundableTaxCancel').value) || 0;
+                const infantWithFees = document.getElementById('infantWithFees').value === 'yes';
+                const cancelNoShowStatus = document.getElementById('cancelNoShowStatus').value;
+                const currentCancelHours = document.getElementById('currentCancelHours').value;
+                const currentCancelFee = parseFloat(document.getElementById('currentCancelFee').value) || 0;
+                const noShowCancelFee = parseFloat(document.getElementById('noShowCancelFee').value) || 0;
+
+                const totalPassengers = adultCancelCount + childCancelCount + infantCancelCount;
+
+                const adultCancelFee = adultCancelPercentage > 0 ? (adultCancelPercentage / 100) * cancelFee : cancelFee;
+                const childCancelFee = childCancelPercentage > 0 ? (childCancelPercentage / 100) * cancelFee : cancelFee;
+                const infantCancelFee = infantWithFees && infantCancelPercentage > 0 ? (infantCancelPercentage / 100) * cancelFee : (infantWithFees ? cancelFee : 0);
+
+                const totalAdultCancel = adultCancelFee * adultCancelCount;
+                const totalChildCancel = childCancelFee * childCancelCount;
+                const totalInfantCancel = infantCancelFee * infantCancelCount;
+
+                const totalNonRefundableTax = (nonRefundableTaxCancel + safaFeeCancel) * totalPassengers;
+                const totalCancellationFees = totalAdultCancel + totalChildCancel + totalInfantCancel;
+                const totalDeduction = totalCancellationFees + (outboundFlightValue > 0 ? outboundFlightValue : 0) + totalNonRefundableTax;
+                const refundAmount = paidAmountCancel - totalDeduction;
+
+                outputText = `
+تفاصيل الإلغاء:
+القيمة المدفوعة: ${paidAmountCancel.toFixed(2)} دينار
+`;
+                if (outboundFlightValue > 0) {
+                    outputText += `قيمة رحلة الذهاب: ${outboundFlightValue.toFixed(2)} دينار\n`;
+                }
+                outputText += `رسوم الإلغاء العامة: ${cancelFee.toFixed(2)} دينار
+`;
+
+                if (adultCancelCount > 0) outputText += `
+رسوم الإلغاء للبالغين: ${totalAdultCancel.toFixed(2)} دينار (لـ ${adultCancelCount} أشخاص)`;
+                if (childCancelCount > 0) outputText += `
+رسوم الإلغاء للأطفال: ${totalChildCancel.toFixed(2)} دينار (لـ ${childCancelCount} أشخاص)`;
+                if (infantCancelCount > 0) outputText += `
+رسوم الإلغاء للرضع: ${totalInfantCancel.toFixed(2)} دينار (لـ ${infantCancelCount} أشخاص)`;
+
+                if (totalNonRefundableTax > 0) outputText += `
+الضرائب غير المستردة: ${totalNonRefundableTax.toFixed(2)} دينار (لـ ${totalPassengers} أشخاص)`;
+
+                outputText += `
+---
+المبلغ المسترد: ${refundAmount.toFixed(2)} دينار
+---
+`;
+
+                if (cancelNoShowStatus === 'withinHours' && currentCancelFee) outputText += `
+في حالة عدم الظهور على الرحلة خلال ${currentCancelHours || '0'} ساعات:
+رسوم الإلغاء: ${currentCancelFee.toFixed(2)} دينار + الضرائب غير المستردة (إن وجدت)`;
+                else if (cancelNoShowStatus === 'afterDeparture' && noShowCancelFee) outputText += `
+في حالة عدم الظهور على الرحلة (بعد إقلاع الرحلة):
+رسوم الإلغاء: ${noShowCancelFee.toFixed(2)} دينار + الضرائب غير المستردة (إن وجدت)`;
+            }
+
+            document.getElementById('cancellationOutput').innerHTML = outputText;
+            currentLanguage['cancellationOutput'] = 'ar';
+        });
+    }
+
+    function generateCancellationOutputEnglish() {
+        showLoading(document.getElementById('generateCancelBtn'), () => {
+            const activeSubTab = document.querySelector('.sub-tab.active').getAttribute('onclick').match(/'([^']+)'/)[1];
+            let outputText;
+
+            if (activeSubTab === 'voidCancel') {
+                const paidAmountCancelVoid = parseFloat(document.getElementById('paidAmountCancelVoid').value) || 0;
+                const voidPassengerCount = parseInt(document.getElementById('voidPassengerCount').value) || 0;
+                const voidSafaFee = 10; // Safa fee per passenger
+                const totalVoidDeduction = voidSafaFee * voidPassengerCount;
+                const refundAmount = paidAmountCancelVoid - totalVoidDeduction;
+
+                outputText = `
+Cancellation details:
+Paid amount: ${paidAmountCancelVoid.toFixed(2)} KWD
+`;
+
+                if (voidPassengerCount > 0) {
+                    outputText += `
+Cancellation fees at current time: ${totalVoidDeduction.toFixed(2)} KWD (for ${voidPassengerCount} persons)
+---
+Refund amount: ${refundAmount.toFixed(2)} KWD
+---
+Note: Cancellation fees are variable after 24 hours`;
+                } else {
+                    outputText += `
+---
+Refund amount: ${paidAmountCancelVoid.toFixed(2)} KWD
+---
+Note: Cancellation fees are variable after 24 hours`;
+                }
+            } else if (activeSubTab === 'normalCancel') {
+                const paidAmountCancel = parseFloat(document.getElementById('paidAmountCancel').value) || 0;
+                const outboundFlightValue = parseFloat(document.getElementById('outboundFlightValue').value) || 0;
+                const cancelFee = parseFloat(document.getElementById('cancelFee').value) || 0;
+                const adultCancelCount = parseInt(document.getElementById('adultCancelCount').value) || 0;
+                const childCancelCount = parseInt(document.getElementById('childCancelCount').value) || 0;
+                const infantCancelCount = parseInt(document.getElementById('infantCancelCount').value) || 0;
+                const adultCancelPercentage = parseFloat(document.getElementById('adultCancelPercentage').value) || 0;
+                const childCancelPercentage = parseFloat(document.getElementById('childCancelPercentage').value);
+                const infantCancelPercentage = parseFloat(document.getElementById('infantCancelPercentage').value);
+                const safaFeeCancel = parseFloat(document.getElementById('safaFeeCancel').value) || 0;
+                const nonRefundableTaxCancel = parseFloat(document.getElementById('nonRefundableTaxCancel').value) || 0;
+                const infantWithFees = document.getElementById('infantWithFees').value === 'yes';
+                const cancelNoShowStatus = document.getElementById('cancelNoShowStatus').value;
+                const currentCancelHours = document.getElementById('currentCancelHours').value;
+                const currentCancelFee = parseFloat(document.getElementById('currentCancelFee').value) || 0;
+                const noShowCancelFee = parseFloat(document.getElementById('noShowCancelFee').value) || 0;
+
+                const totalPassengers = adultCancelCount + childCancelCount + infantCancelCount;
+
+                const adultCancelFee = adultCancelPercentage > 0 ? (adultCancelPercentage / 100) * cancelFee : cancelFee;
+                const childCancelFee = childCancelPercentage > 0 ? (childCancelPercentage / 100) * cancelFee : cancelFee;
+                const infantCancelFee = infantWithFees && infantCancelPercentage > 0 ? (infantCancelPercentage / 100) * cancelFee : (infantWithFees ? cancelFee : 0);
+
+                const totalAdultCancel = adultCancelFee * adultCancelCount;
+                const totalChildCancel = childCancelFee * childCancelCount;
+                const totalInfantCancel = infantCancelFee * infantCancelCount;
+
+                const totalNonRefundableTax = (nonRefundableTaxCancel + safaFeeCancel) * totalPassengers;
+                const totalCancellationFees = totalAdultCancel + totalChildCancel + totalInfantCancel;
+                const totalDeduction = totalCancellationFees + (outboundFlightValue > 0 ? outboundFlightValue : 0) + totalNonRefundableTax;
+                const refundAmount = paidAmountCancel - totalDeduction;
+
+                outputText = `
+Cancellation details:
+Paid amount: ${paidAmountCancel.toFixed(2)} KWD
+`;
+                if (outboundFlightValue > 0) {
+                    outputText += `Outbound flight value: ${outboundFlightValue.toFixed(2)} KWD\n`;
+                }
+                outputText += `General cancellation fee: ${cancelFee.toFixed(2)} KWD
+`;
+
+                if (adultCancelCount > 0) outputText += `
+Cancellation fees for adults: ${totalAdultCancel.toFixed(2)} KWD (for ${adultCancelCount} persons)`;
+                if (childCancelCount > 0) outputText += `
+Cancellation fees for children: ${totalChildCancel.toFixed(2)} KWD (for ${childCancelCount} persons)`;
+                if (infantCancelCount > 0) outputText += `
+Cancellation fees for infants: ${totalInfantCancel.toFixed(2)} KWD (for ${infantCancelCount} persons)`;
+
+                if (totalNonRefundableTax > 0) outputText += `
+Non-refundable taxes: ${totalNonRefundableTax.toFixed(2)} KWD (for ${totalPassengers} persons)`;
+
+                outputText += `
+---
+Refund amount: ${refundAmount.toFixed(2)} KWD
+---
+`;
+
+                if (cancelNoShowStatus === 'withinHours' && currentCancelFee) outputText += `
+In case of no-show within ${currentCancelHours || '0'} hours:
+Cancellation fee: ${currentCancelFee.toFixed(2)} KWD + non-refundable taxes (if applicable)`;
+                else if (cancelNoShowStatus === 'afterDeparture' && noShowCancelFee) outputText += `
+In case of no-show after departure:
+Cancellation fee: ${noShowCancelFee.toFixed(2)} KWD + non-refundable taxes (if applicable)`;
+            }
+
+            document.getElementById('cancellationOutput').innerHTML = outputText;
+            currentLanguage['cancellationOutput'] = 'en';
+        });
+    }
+
+    function toggleLanguage(outputId, button) {
+        showLoading(button, () => {
+            const current = currentLanguage[outputId];
+            if (outputId === 'modificationOutput') {
+                if (current === 'ar') {
+                    generateModificationOutputEnglish();
+                } else {
+                    generateModificationOutput(button);
+                }
+            } else if (outputId === 'cancellationOutput') {
+                if (current === 'ar') {
+                    generateCancellationOutputEnglish();
+                } else {
+                    generateCancellationOutput(button);
+                }
+            }
+        });
+    }
+
+    function resetModificationFieldsWithConfirm() {
+        if (confirm('هل أنت متأكد من إعادة تعيين جميع الحقول؟')) {
+            resetModificationFields();
+        }
+    }
+
+    function resetCancellationFieldsWithConfirm() {
+        if (confirm('هل أنت متأكد من إعادة تعيين جميع الحقول؟')) {
+            resetCancellationFields();
+        }
+    }
+
+    function resetModificationFields() {
+        document.getElementById('modificationType').value = '';
+        document.getElementById('modificationFee').value = '';
+        document.getElementById('modificationCount').value = '';
+        document.getElementById('modificationFeeAfterCount').value = '';
+        document.getElementById('adultPriceDifference').value = '';
+        document.getElementById('adultCount').value = '';
+        document.getElementById('childPriceDifference').value = '';
+        document.getElementById('childCount').value = '';
+        document.getElementById('infantPriceDifference').value = '';
+        document.getElementById('infantCount').value = '';
+        document.getElementById('infantModificationFee').value = 'no';
+        document.getElementById('safaFee').value = '';
+        document.getElementById('aviationTax').value = '';
+        document.getElementById('noShowStatus').value = '';
+        document.getElementById('hours').value = '';
+        document.getElementById('noShowFee').value = '';
+        document.getElementById('noShowFeeAfterDeparture').value = '';
+        document.getElementById('airlineFee').value = '';
+        document.getElementById('safaFeeJazeera').value = '';
+        document.getElementById('bookingReference').value = '';
+        document.getElementById('modificationOutput').innerHTML = '';
+        toggleModificationTypeFields();
+        toggleNoShowFields();
+        currentLanguage['modificationOutput'] = 'ar';
+    }
+
+    function resetCancellationFields() {
+        document.getElementById('paidAmountCancel').value = '';
+        document.getElementById('outboundFlightValue').value = '';
+        document.getElementById('cancelFee').value = '';
+        document.getElementById('paidAmountCancelVoid').value = '';
+        document.getElementById('adultCancelCount').value = '';
+        document.getElementById('childCancelCount').value = '';
+        document.getElementById('infantCancelCount').value = '';
+        document.getElementById('adultCancelPercentage').value = '';
+        document.getElementById('childCancelPercentage').value = '';
+        document.getElementById('infantCancelPercentage').value = '';
+        document.getElementById('safaFeeCancel').value = '';
+        document.getElementById('nonRefundableTaxCancel').value = '';
+        document.getElementById('infantWithFees').value = 'yes';
+        document.getElementById('cancelNoShowStatus').value = 'withinHours';
+        document.getElementById('currentCancelHours').value = '';
+        document.getElementById('currentCancelFee').value = '';
+        document.getElementById('noShowCancelFee').value = '';
+        document.getElementById('voidPassengerCount').value = '';
+        document.getElementById('cancellationOutput').innerHTML = '';
+        showSubTab('normalCancel');
+        toggleCancelNoShowFields();
+        currentLanguage['cancellationOutput'] = 'ar';
+    }
+
+    function copyOutput(outputId, successId) {
+        const output = document.getElementById(outputId).innerText;
+        navigator.clipboard.writeText(output).then(() => {
+            const success = document.getElementById(successId);
+            success.style.display = 'block';
+            setTimeout(() => { success.style.display = 'none'; }, 2000);
+        });
+    }
+
+    toggleModificationTypeFields();
+    toggleNoShowFields();
+</script>
+
+</body>
+</html>
